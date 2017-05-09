@@ -62,8 +62,8 @@ DECLARE_GLOBAL_DATA_PTR;
 	PAD_CTL_SPEED_LOW | PAD_CTL_DSE_80ohm |			\
 	PAD_CTL_SRE_FAST  | PAD_CTL_HYS)
 
-#define ENET_PAD_CTRL  (PAD_CTL_PUS_100K_UP |			\
-	PAD_CTL_SPEED_MED | PAD_CTL_DSE_40ohm | PAD_CTL_HYS)
+#define ENET_PAD_CTRL  (PAD_CTL_PUE | PAD_CTL_PUS_100K_UP |			\
+	PAD_CTL_SPEED_MED | PAD_CTL_DSE_40ohm | PAD_CTL_SRE_FAST)
 
 #define SPI_PAD_CTRL (PAD_CTL_HYS | PAD_CTL_SPEED_MED | \
 		      PAD_CTL_DSE_40ohm | PAD_CTL_SRE_FAST)
@@ -95,8 +95,8 @@ int dram_init(void)
 }
 
 static iomux_v3_cfg_t const uart1_pads[] = {
-	MX6_PAD_CSI0_DAT10__UART1_TX_DATA | MUX_PAD_CTRL(UART_PAD_CTRL),
-	MX6_PAD_CSI0_DAT11__UART1_RX_DATA | MUX_PAD_CTRL(UART_PAD_CTRL),
+	MX6_PAD_EIM_D26__UART2_TX_DATA | MUX_PAD_CTRL(UART_PAD_CTRL),
+	MX6_PAD_EIM_D27__UART2_RX_DATA | MUX_PAD_CTRL(UART_PAD_CTRL),
 };
 
 static iomux_v3_cfg_t const enet_pads[] = {
@@ -272,7 +272,6 @@ static iomux_v3_cfg_t const epdc_enable_pads[] = {
 	MX6_PAD_EIM_A23__EPDC_GDOE	| MUX_PAD_CTRL(EPDC_PAD_CTRL),
 	MX6_PAD_EIM_A24__EPDC_GDRL	| MUX_PAD_CTRL(EPDC_PAD_CTRL),
 	MX6_PAD_EIM_D31__EPDC_SDCLK_P	| MUX_PAD_CTRL(EPDC_PAD_CTRL),
-	MX6_PAD_EIM_D27__EPDC_SDOE	| MUX_PAD_CTRL(EPDC_PAD_CTRL),
 	MX6_PAD_EIM_DA1__EPDC_SDLE	| MUX_PAD_CTRL(EPDC_PAD_CTRL),
 	MX6_PAD_EIM_EB1__EPDC_SDSHR	| MUX_PAD_CTRL(EPDC_PAD_CTRL),
 	MX6_PAD_EIM_DA2__EPDC_BDR0	| MUX_PAD_CTRL(EPDC_PAD_CTRL),
@@ -295,7 +294,6 @@ static iomux_v3_cfg_t const epdc_disable_pads[] = {
 	MX6_PAD_EIM_A23__GPIO6_IO06,
 	MX6_PAD_EIM_A24__GPIO5_IO04,
 	MX6_PAD_EIM_D31__GPIO3_IO31,
-	MX6_PAD_EIM_D27__GPIO3_IO27,
 	MX6_PAD_EIM_DA1__GPIO3_IO01,
 	MX6_PAD_EIM_EB1__GPIO2_IO29,
 	MX6_PAD_EIM_DA2__GPIO3_IO02,
@@ -359,7 +357,8 @@ int board_mmc_getcd(struct mmc *mmc)
 		ret = !gpio_get_value(USDHC2_CD_GPIO);
 		break;
 	case USDHC3_BASE_ADDR:
-		ret = !gpio_get_value(USDHC3_CD_GPIO);
+		//ret = !gpio_get_value(USDHC3_CD_GPIO);
+		ret = 1;
 		break;
 	case USDHC4_BASE_ADDR:
 		ret = 1; /* eMMC/uSDHC4 is always present */
@@ -970,6 +969,7 @@ int board_init(void)
 }
 
 static struct pmic *pfuze;
+#if 0
 int power_init_board(void)
 {
 	unsigned int reg;
@@ -1051,6 +1051,7 @@ int power_init_board(void)
 
 	return 0;
 }
+#endif
 
 #ifdef CONFIG_LDO_BYPASS_CHECK
 void ldo_mode_set(int ldo_bypass)
@@ -1245,7 +1246,7 @@ int check_recovery_cmd_file(void)
 {
     int button_pressed = 0;
     int recovery_mode = 0;
-
+#if 0
     recovery_mode = recovery_check_and_clean_flag();
 
     /* Check Recovery Combo Button press or not. */
@@ -1258,7 +1259,7 @@ int check_recovery_cmd_file(void)
 		button_pressed = 1;
 		printf("Recovery key pressed\n");
     }
-
+#endif
     return recovery_mode || button_pressed;
 }
 
